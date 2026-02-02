@@ -6,15 +6,18 @@ import { User } from "../models/User";
 const router = Router();
 
 router.post("/register", async (req, res) => {
-  const { email, username, password, role } = req.body;
-
-  if (!email || !username || !password || !role) {
-    return res.status(400).json({ error: "Missing fields" });
-  }
-
-  const passwordHash = await bcrypt.hash(password, 10);
-
   try {
+    const { username, email, password, confirmPassword, role } = req.body;
+
+    if (!username || !email || !password || !confirmPassword || !role) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ error: "Passwords do not match" });
+    }
+    const passwordHash = await bcrypt.hash(password, 10);
+  
     const user = await User.create({
       email,
       username,
