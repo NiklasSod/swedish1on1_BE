@@ -1,8 +1,9 @@
 import express from "express";
 import cors from "cors";
-import authRoute from "./routes/auth";
+import authRoute from "./routes/auth/register";
 import mongoose from "mongoose";
 import "dotenv/config";
+import runCleanup from "./cron";
 
 const app = express();
 const mongoURI = process.env.MONGODB_URI ?? "";
@@ -23,6 +24,8 @@ const startServer = async () => {
   try {
     await mongoose.connect(mongoURI);
     console.log("MongoDB connected successfully!");
+
+    runCleanup();
 
     app.listen(3000, () => {
       console.log("API running on http://localhost:3000");
