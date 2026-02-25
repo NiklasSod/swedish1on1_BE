@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { USER_ROLES } from "./types";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -19,13 +20,13 @@ const UserSchema = new mongoose.Schema(
       minlength: 3,
       maxlength: 30
     },
-    passwordHash: { 
+    hashedPassword: { 
       type: String, 
       required: true
     },
     role: { 
       type: String, 
-      enum: ["student", "teacher"], 
+      enum: USER_ROLES, 
       required: true 
     },
     verified: {

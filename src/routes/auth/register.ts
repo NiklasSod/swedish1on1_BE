@@ -1,5 +1,6 @@
 // src/routes/auth.ts
 import { Router } from "express";
+import { z } from "zod";
 import bcrypt from "bcrypt";
 import { User } from "../../models/User";
 import { registerSchema } from "../../models/zod/registerSchema";
@@ -7,43 +8,29 @@ import { registerSchema } from "../../models/zod/registerSchema";
 const router = Router();
 
 router.post("/register", async (req, res) => {
+  const result = registerSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({ errors: z.treeifyError(result.error) });
+  }
   try {
-    const validatedData = registerSchema.parse(req.body);
-    const { username, email, password, confirmPassword, role } = validatedData;
+    const { username, email, password, role } = result.data;
 
-    if (!username || !email || !password || !confirmPassword || !role) {
-      return res.status(400).json({ error: "Missing fields" });
-    }
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-    if (password.length < 8) {
-      return res.status(400).json({ error: "Password must be at least 8 characters long" });
-    }
-
-    if (password !== confirmPassword) {
-      return res.status(400).json({ error: "Passwords do not match" });
-    }
-    const passwordHash = await bcrypt.hash(password, 10);
-  
-    const user = await User.create({
-      email,
+    await User.create({
       username,
-      passwordHash,
+      email,
+      hashedPassword,
       role,
-      verified: false,
     });
 
-    res.status(201).json({
-      id: user._id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-      verified: false,
-    });
+    return res.status(201).json({ message: "User created" });
   } catch (err: any) {
     if (err.code === 11000) {
       return res.status(409).json({ error: "Email or username already exists" });
     }
-    res.status(500).json({ error: "Server error" });
+
+    return res.status(500).json({ error: "Server error" });
   }
 });
 
