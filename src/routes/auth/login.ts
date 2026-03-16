@@ -8,7 +8,6 @@ import { loginSchema } from "../../models/zod/loginSchema";
 const router = Router();
 
 router.post("/login", async (req, res) => {
-  console.log("Login attempt with data:", req.body);
   const result = loginSchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({ errors: z.treeifyError(result.error) });
@@ -25,7 +24,6 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    console.log(`User ${user.username} logged in successfully`);
     return res.json({ message: "Login successful" });
 
   } catch (err: any) {
