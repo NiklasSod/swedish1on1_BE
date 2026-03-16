@@ -20,7 +20,7 @@ const UserSchema = new mongoose.Schema(
       minlength: 3,
       maxlength: 30
     },
-    hashedPassword: { 
+    passwordHash: { 
       type: String, 
       required: true
     },

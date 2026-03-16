@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import authRoute from "./routes/auth/register";
+import registerAccount from "./routes/auth/register";
+import loginAccount from "./routes/auth/login";
 import mongoose from "mongoose";
 import "dotenv/config";
 import runCleanup from "./cron";
@@ -14,7 +15,8 @@ app.use(
   })
 );
 app.use(express.json());
-app.use("/auth", authRoute);
+app.use("/auth", registerAccount);
+app.use("/auth", loginAccount);
 
 app.get("/health", (_, res) => {
   res.json({ ok: true });

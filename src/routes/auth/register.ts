@@ -15,12 +15,12 @@ router.post("/register", async (req, res) => {
   try {
     const { username, email, password, role } = result.data;
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(password, 12);
 
     await User.create({
       username,
       email,
-      hashedPassword,
+      passwordHash,
       role,
     });
 
